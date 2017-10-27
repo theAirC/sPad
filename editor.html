@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Editor</title>
+    <style type="text/css" media="screen">
+        body {
+            overflow: hidden;
+        }
+
+        #editor {
+            margin: 0;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+
+<pre id="editor">
+function foo()
+{
+    for (var i = 0; i < 5; i++) {
+        console.log("Ace Rocks " + i);
+    }
+}
+
+foo();
+</pre>
+
+<script src="src-min/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    const sPad = {
+        sandbox: {},
+
+        evalWrap: function(code) {
+            eval(code);
+        },
+        evalInSB: function(code) {
+            sPad.evalWrap.call(sPad.sandbox, code);
+        },
+        RunSelected: function(editor)
+        {
+            var selected = editor.getSelectionRange();
+            selected.start.column = 0;
+            selected.end.column = 0;
+            selected.end.row += 1;
+            var code = editor.session.getTextRange(selected);
+            sPad.evalInSB(code);
+        },
+        RunAll: function(editor)
+        {
+            var code = editor.getValue();
+            sPad.evalInSB(code);
+        },
+        Clear: function(editor)
+        {
+            sPad.sandbox = {};
+            console.clear();
+            console.log("Sandbox cleared");
+        }
+    };
+
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/javascript");
+    editor.setOptions({
+        fontSize: 18,
+        showPrintMargin: false,
+        vScrollBarAlwaysVisible: true
+    });
+    editor.commands.addCommand({
+        name: 'Run Selected',
+        bindKey: {win: 'Alt-q',  mac: 'Alt-q'},
+        exec: sPad.RunSelected
+    });
+    editor.commands.addCommand({
+        name: 'Run All',
+        bindKey: {win: 'Alt-`',  mac: 'Alt-`'},
+        exec: sPad.RunAll
+    });
+    editor.commands.addCommand({
+        name: 'Clear Sandbox',
+        bindKey: {win: 'Alt-x',  mac: 'Alt-x'},
+        exec: sPad.Clear
+    });
+</script>
+
+</body>
+</html>
