@@ -22,14 +22,16 @@
 <body>
 
 <pre id="editor">
-function foo()
+
+this.a = 0;
+
+this.foo = function()
 {
-    for (var i = 0; i < 5; i++) {
-        console.log("Ace Rocks " + i);
-    }
-}
+    console.log("sPad Rocks! " + a);
+};
 
 foo();
+a++;
 </pre>
 
 <script src="https://theairc.github.io/sPad/src-min/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -38,7 +40,7 @@ foo();
         sandbox: {},
 
         evalWrap: function(code) {
-            eval(code);
+            with (this) eval(code);
         },
         evalInSB: function(code) {
             sPad.evalWrap.call(sPad.sandbox, code);
